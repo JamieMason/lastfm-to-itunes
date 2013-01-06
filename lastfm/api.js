@@ -11,6 +11,8 @@ exports.defaults = {
 exports.services = {
   user: {
     getInfo: '/2.0/?method=user.getinfo&user=#{username}&api_key=#{apiKey}&format=json',
-    getTracks: '/2.0/?method=library.gettracks&user=#{username}&api_key=#{apiKey}&format=json&page=#{page}&limit=#{limit}'
+    getTracks: '/2.0/?method=library.gettracks&user=#{username}&api_key=#{apiKey}&format=json&page=#{page}&limit=#{limit}',
+    getLovedTracks: '/2.0/?method=user.getlovedtracks&user=#{username}&api_key=#{apiKey}&format=json&page=#{page}&limit=#{limit}'
   }
 };
+
