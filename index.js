@@ -1,5 +1,8 @@
 var lastfm = require('./lastfm');
 var fs = require('fs');
+var async = require('./async');
+var child_process = require('child_process');
+var matchTrackPath = require('path').resolve('applescript/itunes/matchTrack.applescript');
 
 /*
 lastfm.user.getInfo('NakedIntruder', {
@@ -39,8 +42,33 @@ lastfm.user.getLibrary('NakedIntruder', {
 
 lastfm.user.getLovedTracks('NakedIntruder', {
   end: function(data) {
-    data[0].lovedtracks.track.forEach(function (track) {
-      console.log(track.artist.name + ' - ' + track.name);
+    var flattened = [];
+
+    data.forEach(function (page) {
+      page.lovedtracks.track.forEach(function (track) {
+        flattened.push({
+          lastfm: '"' + track.artist.name.replace(/"/g, '') + '" "' + track.name.replace(/"/g, '') + '"',
+          itunes: ''
+        });
+      });
+    });
+
+    console.log('processing ', flattened.length, ' loved tracks...');
+
+    async.map(flattened, function(done, el, ix) {
+      child_process.exec('osascript ' + matchTrackPath + ' ' + el.lastfm, function(error, stdout, stderr) {
+        if(stderr || error !== null) {
+          console.error(error);
+          process.exit(1);
+        } else {
+          el.itunes = stdout;
+          done(el);
+        }
+      });
+    }, {
+      done: function(data) {
+        console.log(JSON.stringify(data));
+      }
     });
 
     // fs.writeFile('/Users/jdog/Desktop/loved.json', JSON.stringify(data), function(err) {
