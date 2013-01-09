@@ -60,7 +60,9 @@ exports.map = function (list, handler, options) {
    */
   function activate(i) {
     ++activeHandlers;
-    handler(deactivate.bind(null, i), list[i], i, list);
+    setTimeout(function () {
+      handler(deactivate.bind(null, i), list[i], i, list);
+    }, 0);
   }
 
   /**
